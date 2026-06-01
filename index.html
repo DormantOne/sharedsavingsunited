@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UnitedHealthcare PATH Measures 2026</title>
+<style>
+  :root{
+    --uhc-blue:#002677; --uhc-bright:#0056b3; --uhc-sky:#316bbe;
+    --ink:#1a1d29; --muted:#5b6472; --line:#e3e7ee; --bg:#f4f6fa; --card:#ffffff;
+    --hybrid:#c98a00; --ecds:#1a8f5a; --admin:#3a6ea5; --partd:#b5378e;
+    --red:#c0392b; --teal:#0f8a8a; --slate:#5a6478;
+  }
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--ink);line-height:1.45}
+  .wrap{max-width:1040px;margin:0 auto;padding:18px 16px 60px}
+  header.top{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;border-bottom:3px solid var(--uhc-blue);padding-bottom:10px;margin-bottom:14px}
+  header.top h1{font-size:22px;margin:0;color:var(--uhc-blue);letter-spacing:-.3px}
+  header.top .sub{font-size:12px;color:var(--muted)}
+  header.top a{font-size:12px;color:var(--uhc-bright)}
+
+  .plan-toggle{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .plan-button{padding:9px 16px;background:#e7ecf4;color:var(--uhc-blue);border:1px solid #ccd6e6;border-radius:30px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+  .plan-button:hover{background:#d8e2f1}
+  .plan-button.active{background:var(--uhc-blue);color:#fff;border-color:var(--uhc-blue);box-shadow:0 2px 6px rgba(0,38,119,.25)}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .frailty-button{padding:7px 13px;font-size:12px;font-weight:600;border:1px solid #ccd6e6;border-radius:6px;background:#fff;color:var(--ink);cursor:pointer;transition:.15s}
+  .frailty-button:hover{background:#f0f3f8}
+  .frailty-button.active{background:#ffc845;border-color:#e0a800;color:#3a2d00}
+  .search{flex:1;min-width:170px;padding:8px 11px;border:1px solid var(--line);border-radius:6px;font-size:13px}
+  .stat{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:6px;padding:7px 11px;font-weight:600}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .legend b{color:var(--ink)}
+  .lg{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .dot.hybrid{background:var(--hybrid)}.dot.ecds{background:var(--ecds)}
+  .dot.admin{background:var(--admin)}.dot.partd{background:var(--partd)}
+
+  /* Detail panel */
+  #details{display:none;position:relative;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--uhc-blue);border-radius:10px;padding:16px 16px 14px;margin-bottom:18px;box-shadow:0 6px 20px rgba(20,30,60,.07)}
+  #closeBtn{position:absolute;top:12px;right:12px;background:#eef1f6;color:var(--muted);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1}
+  #closeBtn:hover{background:#e0e5ee;color:var(--ink)}
+  .d-name{font-size:19px;font-weight:700;color:var(--uhc-blue);margin:0 40px 2px 0;letter-spacing:-.2px}
+  .d-id{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .d-id a{color:var(--uhc-bright);text-decoration:none;font-weight:600}
+  .d-id a:hover{text-decoration:underline}
+
+  .banner{border-radius:8px;padding:11px 13px;margin-bottom:10px;font-size:13.5px}
+  .gap{background:#eef4ff;border:1px solid #cfe0ff}
+  .gap .h{font-weight:700;color:var(--uhc-blue);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .gap ul{margin:0;padding-left:18px}.gap li{margin:3px 0;color:#1f3a66}
+
+  .method{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .chip{font-size:12px;font-weight:700;padding:6px 11px;border-radius:20px;color:#fff;display:inline-flex;align-items:center;gap:6px}
+  .chip small{font-weight:500;opacity:.92}
+  .chip.hybrid{background:var(--hybrid)}.chip.ecds{background:var(--ecds)}
+  .chip.admin{background:var(--admin)}.chip.partd{background:var(--partd)}
+  .chip.supp{background:#eaf6ef;color:#1a6f47;border:1px solid #b9e2cb}
+  .chip.new{background:#fff3d6;color:#8a5a00;border:1px solid #f0d99a}
+  .chip.plan{background:#eef1f6;color:var(--uhc-blue);border:1px solid #d4dcea}
+
+  .meta{font-size:13.5px}
+  .meta p{margin:6px 0}.meta b{color:var(--ink)}
+  .meta .def{background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin:8px 0;color:#2a3340}
+
+  .row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .row-btns button{flex:1;min-width:120px;background:#eef1f6;color:var(--uhc-blue);border:1px solid #d4dcea;border-radius:6px;padding:9px;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .row-btns button:hover{background:#e2e8f2}
+  .collapse{display:none;margin-top:10px;background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:11px 13px;font-size:13px}
+  .collapse ul{margin:4px 0;padding-left:18px}.collapse li{margin:4px 0}
+  .excl-frail{color:var(--red);font-weight:600}
+
+  /* Measure grid */
+  .cat{margin-top:18px}
+  .cat-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:5px;margin-bottom:10px}
+  .cat-head .bar{width:14px;height:14px;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:9px}
+  .m-btn{position:relative;text-align:left;border:none;border-radius:9px;padding:13px 11px 11px;cursor:pointer;color:#fff;font-size:13px;font-weight:600;line-height:1.25;min-height:62px;transition:transform .1s,box-shadow .15s;overflow:hidden}
+  .m-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(20,30,60,.18)}
+  .m-btn .mid{display:block;font-size:10.5px;font-weight:700;opacity:.85;margin-bottom:3px;letter-spacing:.5px}
+  .m-btn.cardiometabolic{background:linear-gradient(135deg,#0056b3,#003a8c)}
+  .m-btn.cancer{background:linear-gradient(135deg,#c0392b,#9b2520)}
+  .m-btn.administrative{background:linear-gradient(135deg,#0f8a8a,#0a6c6c)}
+  .m-btn.other{background:linear-gradient(135deg,#5a6478,#444c5e)}
+  /* method strip on left edge */
+  .m-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px}
+  .m-btn.method-Hybrid::before{background:var(--hybrid)}
+  .m-btn.method-ECDS::before{background:var(--ecds)}
+  .m-btn.method-Administrative::before{background:#bcd0ec}
+  .m-btn.method-PartD::before{background:var(--partd)}
+  /* method tag top-right */
+  .m-tag{position:absolute;top:6px;right:6px;font-size:9px;font-weight:800;letter-spacing:.5px;background:rgba(255,255,255,.22);padding:2px 5px;border-radius:4px}
+  .m-flags{position:absolute;bottom:6px;right:8px;display:flex;gap:3px}
+  .m-flags span{font-size:9px;font-weight:800;background:rgba(255,255,255,.9);color:#333;border-radius:3px;padding:1px 4px}
+  .m-btn.sel{outline:3px solid var(--ink);outline-offset:1px}
+  .m-btn.sel::after{content:"\2713";position:absolute;bottom:6px;left:9px;font-weight:800}
+
+  .frailty-on .m-btn.frail{background:#f0f0f0 !important;color:#444 !important;border:1px dashed #b33}
+  .frailty-on .m-btn.frail .m-tag{background:rgba(180,30,30,.12);color:#a11}
+  .frailty-on .m-btn.frail::before{opacity:.4}
+
+  footer{margin-top:30px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+  .hidden{display:none !important}
+  @media(max-width:420px){.grid{grid-template-columns:1fr 1fr}.row-btns button{min-width:90px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>PATH Measures 2026</h1>
+    <span class="sub">UnitedHealthcare Quality Reference Guide &mdash; HEDIS&reg; / CMS Stars / Part D</span>
+  </header>
+
+  <div class="plan-toggle" id="planToggle">
+    <button class="plan-button active" data-plan="medicare">Medicare / SNP</button>
+    <button class="plan-button" data-plan="commercial">Commercial</button>
+    <button class="plan-button" data-plan="exchange">Exchange / Marketplace</button>
+    <button class="plan-button" data-plan="medicaid">Medicaid</button>
+  </div>
+
+  <div class="controls">
+    <input class="search" id="search" placeholder="Filter measures (name or ID)&hellip;"/>
+    <button class="frailty-button" id="frailtyBtn">Show Frailty &amp; Adv. Illness Exclusions</button>
+    <span class="stat" id="stat">0 measures</span>
+  </div>
+
+  <div class="legend">
+    <span><b>Collection method</b> (how a gap closes):</span>
+    <span class="lg"><span class="dot hybrid"></span> <b>Hybrid</b> &mdash; your chart documentation counts</span>
+    <span class="lg"><span class="dot ecds"></span> <b>ECDS</b> &mdash; EHR / lab + supplemental data</span>
+    <span class="lg"><span class="dot admin"></span> <b>Administrative</b> &mdash; coding / claims only</span>
+    <span class="lg"><span class="dot partd"></span> <b>Part D</b> &mdash; pharmacy adherence (PDC &ge;80%)</span>
+  </div>
+
+  <div id="details">
+    <button id="closeBtn" aria-label="Close">&times;</button>
+    <div class="d-name" id="dName">Select a measure</div>
+    <div class="d-id" id="dId"></div>
+
+    <div class="banner gap">
+      <div class="h">Close the care opportunity</div>
+      <ul id="dGap"></ul>
+    </div>
+
+    <div class="method" id="dMethod"></div>
+
+    <div class="meta" id="dMeta"></div>
+
+    <div class="row-btns">
+      <button id="bpBtn">Best Practices</button>
+      <button id="exBtn">Required Exclusions</button>
+    </div>
+    <div class="collapse" id="bpBox"></div>
+    <div class="collapse" id="exBox"></div>
+  </div>
+
+  <div id="catContainer"></div>
+
+  <footer>
+    Experimental, provider-facing view &mdash; possible errors. Always vet against the source:
+    <b>2026 UnitedHealthcare HEDIS, CMS Part D, CAHPS and HOS Quality Reference Guide</b>
+    (PCA-1-26-00810-E&amp;I-QRG). Page links open the source PDF.
+    "Collection method" replaces a point/weight system because the PATH guide is a HEDIS/Stars reference, not a weighted incentive program.
+  </footer>
+</div>
+
+<script>
+/* ---- Data is embedded so this file runs standalone. The same object also lives
+       in united_path_2026.json for a server/backend setup (fetch it instead). ---- */
+const DATA = {
+  "_meta": {
+    "title": "UnitedHealthcare 2026 PATH Quality Reference Guide",
+    "source": "United_2026-PATH-Ref-Guide.pdf (PCA-1-26-00810-E&I-QRG)",
+    "version_note": "Curated from the 2026 HEDIS, CMS Part D, CAHPS and HOS Quality Reference Guide. Vet against the source PDF.",
+    "method_legend": {
+      "Hybrid": "Chart review counts \u2014 your medical-record documentation can close the gap.",
+      "ECDS": "Electronic Clinical Data Systems \u2014 closed via EHR/lab feeds and supplemental clinical data.",
+      "Administrative": "Claims/coding only \u2014 closed by submitting the correct codes on the claim.",
+      "Part D": "Pharmacy / Part D adherence (PDC \u2265 80%) \u2014 closed through medication adherence, not coding."
+    }
+  },
+  "conditions": {
+    "Controlling High Blood Pressure": {
+      "measure_id": "CBP",
+      "category": "cardiometabolic",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Hybrid",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 62,
+      "ages": "18\u201385 years with a diagnosis of hypertension",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "CMS Quality Rating System", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of members ages 18\u201385 with a diagnosis of hypertension (HTN) whose blood pressure was adequately controlled at <140/90 mmHg during the measurement year."],
+      "methods_to_close_gap": [
+        "Record the most recent BP reading in the chart; submit CPT II codes (systolic 3074F/3075F/3077F, diastolic 3078F/3079F/3080F) on the claim.",
+        "If the first reading is elevated, repeat it the same visit and document the lowest value \u2014 the lowest systolic and lowest diastolic each count, even from different readings.",
+        "Patient self-measured / remote BP readings count when recorded by the practice.",
+        "Submit supplemental data through the UnitedHealthcare Provider Portal (Practice Assist)."
+      ],
+      "best_practices": [
+        "Member-reported home/digital readings are acceptable when documented in the medical record.",
+        "Address the gap at every visit \u2014 a single controlled reading during the year closes it.",
+        "Review the monthly Patient Care Opportunity Report (PCOR) for open members."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services (any time during the measurement year)",
+        "Members who died during the measurement year",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)",
+        "Members 81+ with frailty (optional exclusion)",
+        "End-stage renal disease (ESRD), kidney transplant, pregnancy, or non-acute inpatient stay"
+      ]
+    },
+    "Blood Pressure Control for Patients With Diabetes": {
+      "measure_id": "BPD",
+      "category": "cardiometabolic",
+      "plans": ["medicare", "commercial", "medicaid"],
+      "method": "Hybrid",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 56,
+      "ages": "18\u201375 years with diabetes (Types 1 and 2)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of members ages 18\u201375 with diabetes (Types 1 and 2) whose blood pressure was controlled at <140/90 mmHg during the measurement year."],
+      "methods_to_close_gap": [
+        "Document the most recent BP and submit BP CPT II codes on the claim.",
+        "Repeat an elevated reading during the visit; lowest systolic and lowest diastolic count.",
+        "Submit supplemental data via the Provider Portal (Practice Assist)."
+      ],
+      "best_practices": [
+        "Combine the BP check with the diabetes visit (A1c, eye, kidney) to close multiple gaps at once.",
+        "Self-measured BP readings count when documented."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Glycemic Status Assessment for Patients With Diabetes": {
+      "measure_id": "GSD",
+      "category": "cardiometabolic",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Hybrid",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 77,
+      "ages": "18\u201375 years with diabetes (Types 1 and 2)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "CMS Quality Rating System", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of members ages 18\u201375 with diabetes whose most recent glycemic status (HbA1c or glucose management indicator, GMI) showed blood sugar under control during the measurement year."],
+      "methods_to_close_gap": [
+        "Order the most recent A1c (or GMI from CGM) and submit the CPT II result code (e.g., 3044F <7.0%, 3051F 7.0\u20139.0%, 3052F).",
+        "Submit the lab result as supplemental data via the Provider Portal.",
+        "An A1c >9.0% (or no test) counts as non-compliant \u2014 the most recent value in the year wins."
+      ],
+      "best_practices": [
+        "Schedule the A1c early in the year so an elevated value can be re-tested and improved.",
+        "GMI from a continuous glucose monitor counts toward glycemic status."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Eye Exam for Patients With Diabetes": {
+      "measure_id": "EED",
+      "category": "cardiometabolic",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 70,
+      "ages": "18\u201375 years with diabetes (Types 1 and 2)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of members ages 18\u201375 with diabetes who had a retinal or dilated eye exam by an eye care professional."],
+      "methods_to_close_gap": [
+        "Refer to an eye care professional for a dilated/retinal exam; ensure the result is coded.",
+        "A negative retinopathy result lets the prior-year exam count for the current year \u2014 capture that documentation.",
+        "Submit the eye-exam result as supplemental data."
+      ],
+      "best_practices": [
+        "Retinal imaging read by an eye care professional satisfies the measure.",
+        "Document 'no evidence of retinopathy' to extend a prior exam an extra year."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Kidney Health Evaluation for Patients With Diabetes": {
+      "measure_id": "KED",
+      "category": "cardiometabolic",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 81,
+      "ages": "18\u201385 years with diabetes (Types 1 and 2)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of members ages 18\u201385 with diabetes who had a kidney health evaluation \u2014 BOTH an eGFR and a uACR \u2014 in the measurement year (same or different dates of service)."],
+      "methods_to_close_gap": [
+        "Order BOTH tests: an estimated glomerular filtration rate (eGFR) AND a urine albumin-creatinine ratio (uACR). One without the other does not count.",
+        "uACR requires both a quantitative urine albumin and a urine creatinine.",
+        "Submit lab results as supplemental data."
+      ],
+      "best_practices": [
+        "Bundle the uACR and eGFR with the annual diabetes labs.",
+        "Both components must fall within the measurement year."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Statin Therapy for Patients With Cardiovascular Disease": {
+      "measure_id": "SPC-E",
+      "category": "cardiometabolic",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Administrative",
+      "supplemental": false,
+      "new_2026": "Added / transitioned to ECDS reporting for 2026.",
+      "pdf_page": 311,
+      "ages": "21\u201375 years with clinical ASCVD",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Members ages 21\u201375 identified with clinical atherosclerotic cardiovascular disease (ASCVD) who (1) were dispensed at least one high- or moderate-intensity statin and (2) remained on the statin \u226580% of the treatment period."],
+      "methods_to_close_gap": [
+        "Prescribe a moderate- or high-intensity statin for members with ASCVD.",
+        "Address adherence at refills; pharmacy claims drive this measure.",
+        "Document statin intolerance/contraindication where applicable."
+      ],
+      "best_practices": [
+        "Pair with the diabetes statin (SUPD) outreach for overlapping patients.",
+        "90-day fills and auto-refill support adherence."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Pregnancy, ESRD, cirrhosis, or myalgia/myositis/rhabdomyolysis",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Statin Use in Persons With Diabetes": {
+      "measure_id": "SUPD",
+      "category": "cardiometabolic",
+      "plans": ["medicare"],
+      "method": "Part D",
+      "supplemental": false,
+      "new_2026": "Updated for 2026.",
+      "pdf_page": 344,
+      "ages": "40\u201375 years with diabetes (Medicare Part D)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings (Part D)"],
+      "description": ["Percentage of Medicare members with diabetes ages 40\u201375 who received at least one fill of a statin medication during the measurement period under their Part D benefit."],
+      "methods_to_close_gap": [
+        "Prescribe any statin (any intensity) and ensure at least one Part D fill in the year.",
+        "Pharmacy-claims based \u2014 codes/chart notes do not close it.",
+        "Resolve statin gaps proactively; one fill satisfies the measure."
+      ],
+      "best_practices": [
+        "Use the PCOR to find diabetic members with no statin fill.",
+        "Document and act on true statin intolerance."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or with ESRD",
+        "Pregnancy, cirrhosis, rhabdomyolysis/myopathy",
+        "Fewer than two diabetes medication fills in the year"
+      ]
+    },
+    "Persistence of Beta-Blocker Treatment After a Heart Attack": {
+      "measure_id": "PBH",
+      "category": "cardiometabolic",
+      "plans": ["medicaid"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "Updated for 2026.",
+      "pdf_page": 85,
+      "ages": "18 and older, hospitalized for AMI",
+      "measurement_period": "July 1 (prior year) \u2013 June 30 (measurement year)",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Percentage of members 18+ discharged with an acute myocardial infarction (AMI) who received persistent beta-blocker treatment for at least 180 days after discharge."],
+      "methods_to_close_gap": [
+        "Prescribe a beta-blocker at discharge and maintain it \u2014 \u2265180 days of treatment required.",
+        "Support refills and adherence in the 6 months post-MI."
+      ],
+      "best_practices": [
+        "Coordinate with cardiology on the discharge regimen.",
+        "Monitor refill gaps in the first 6 months."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Breast Cancer Screening": {
+      "measure_id": "BCS-E",
+      "category": "cancer",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "ECDS",
+      "supplemental": true,
+      "new_2026": "Supplemental data accepted; reported via ECDS.",
+      "pdf_page": 232,
+      "ages": "40\u201374 years (women)",
+      "measurement_period": "Oct 1 two years prior \u2013 December 31 of the measurement year",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of women ages 40\u201374 recommended for routine breast cancer screening who had a mammogram completed between October 1 two years prior and December 31 of the measurement year (a roughly 27-month look-back)."],
+      "methods_to_close_gap": [
+        "Order/refer for a mammogram; result feeds ECDS.",
+        "Submit outside mammogram results as supplemental clinical data.",
+        "A bilateral mastectomy (or two unilateral) excludes the member \u2014 ensure it is documented."
+      ],
+      "best_practices": [
+        "Standing orders and reminder outreach raise screening rates.",
+        "Capture mammograms done elsewhere via supplemental data."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Bilateral mastectomy / history of bilateral mastectomy",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Colorectal Cancer Screening": {
+      "measure_id": "COL-E",
+      "category": "cancer",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "ECDS",
+      "supplemental": true,
+      "new_2026": "No applicable changes; reported via ECDS.",
+      "pdf_page": 251,
+      "ages": "45\u201375 years",
+      "measurement_period": "Look-back varies by test type, ending December 31 of the measurement year",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of members ages 45\u201375 who had appropriate screening for colorectal cancer (e.g., FOBT/FIT annually, FIT-DNA every 3 years, CT colonography or flexible sigmoidoscopy every 5 years, colonoscopy every 10 years)."],
+      "methods_to_close_gap": [
+        "Offer FIT/FOBT in-office for members not due for colonoscopy \u2014 easiest annual close.",
+        "Document the colonoscopy date (counts 10 years) or sigmoidoscopy (5 years).",
+        "Submit screening results as supplemental data."
+      ],
+      "best_practices": [
+        "Hand the patient a FIT kit at the visit and track return.",
+        "Capture prior colonoscopy reports via supplemental data."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Colorectal cancer or total colectomy",
+        "Advanced illness and frailty, ages 66+ (optional exclusion)"
+      ]
+    },
+    "Cervical Cancer Screening": {
+      "measure_id": "CCS-E",
+      "category": "cancer",
+      "plans": ["commercial", "exchange", "medicaid"],
+      "method": "ECDS",
+      "supplemental": true,
+      "new_2026": "No applicable changes; reported via ECDS.",
+      "pdf_page": 237,
+      "ages": "21\u201364 years (women)",
+      "measurement_period": "Look-back varies by test, ending December 31 of the measurement year",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Percentage of women ages 21\u201364 appropriately screened for cervical cancer: cytology every 3 years (ages 21\u201364), or hrHPV/cotest every 5 years (ages 30\u201364)."],
+      "methods_to_close_gap": [
+        "Perform a Pap (cytology) and document the date; counts 3 years.",
+        "For ages 30\u201364, an hrHPV or co-test counts 5 years \u2014 document it.",
+        "Submit cytology/HPV results as supplemental data."
+      ],
+      "best_practices": [
+        "Confirm screening history before re-testing to avoid over-screening.",
+        "A documented hysterectomy with no residual cervix excludes the member."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Hysterectomy with no residual cervix / total hysterectomy"
+      ]
+    },
+    "Chlamydia Screening": {
+      "measure_id": "CHL",
+      "category": "cancer",
+      "plans": ["commercial", "exchange", "medicaid"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "Age range / specification update for 2026.",
+      "pdf_page": 36,
+      "ages": "16\u201324 years (sexually active women)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Percentage of women ages 16\u201324 identified as sexually active who had at least one chlamydia screening test during the measurement year."],
+      "methods_to_close_gap": [
+        "Offer a urine-based NAAT chlamydia test at the visit; submit the lab code.",
+        "Pair with routine reproductive/preventive visits.",
+        "Submit lab results as supplemental data."
+      ],
+      "best_practices": [
+        "Normalize routine screening to reduce stigma.",
+        "Sexual activity is identified by claims (pregnancy tests, contraceptives, STI services)."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Pregnancy test followed by specific medications without other activity markers (per spec)"
+      ]
+    },
+    "Osteoporosis Management in Women Who Had a Fracture": {
+      "measure_id": "OMW",
+      "category": "cancer",
+      "plans": ["medicare"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "Supplemental data accepted for 2026.",
+      "pdf_page": 40,
+      "ages": "67\u201385 years (women) with a fracture",
+      "measurement_period": "6 months following the fracture",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of women ages 67\u201385 who suffered a fracture and had either a bone mineral density (BMD) test or a prescription for an osteoporosis drug within 6 months of the fracture (excludes finger, toe, face and skull fractures)."],
+      "methods_to_close_gap": [
+        "Within 6 months of the fracture, order a BMD test OR prescribe an osteoporosis therapy.",
+        "Submit the BMD result or pharmacy fill; document the date relative to the fracture.",
+        "Submit supplemental data via the Provider Portal."
+      ],
+      "best_practices": [
+        "Flag any fragility fracture for immediate osteoporosis follow-up.",
+        "A BMD test in the 24 months before the fracture can also satisfy the measure."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "BMD test or osteoporosis therapy already in the look-back window",
+        "Advanced illness and frailty (optional exclusion)"
+      ]
+    },
+    "Adult Immunization Status": {
+      "measure_id": "AIS-E",
+      "category": "cancer",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "ECDS",
+      "supplemental": true,
+      "new_2026": "Added / expanded for 2026.",
+      "pdf_page": 226,
+      "ages": "19 and older",
+      "measurement_period": "Varies by vaccine; reported via ECDS",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Percentage of members 19+ up to date on recommended adult vaccinations: influenza, Td/Tdap, herpes zoster (recombinant, 2 doses), and pneumococcal (composite)."],
+      "methods_to_close_gap": [
+        "Administer or document influenza, Td/Tdap, zoster (2 doses) and pneumococcal vaccines.",
+        "Report historical immunizations via the state registry / ECDS feed.",
+        "Submit immunization records as supplemental data."
+      ],
+      "best_practices": [
+        "Reconcile the immunization registry at every visit.",
+        "Pharmacy-administered vaccines count when captured in the data feed."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Plan All-Cause Readmissions": {
+      "measure_id": "PCR",
+      "category": "administrative",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Administrative",
+      "supplemental": false,
+      "new_2026": "Updated for 2026.",
+      "pdf_page": 114,
+      "ages": "18 and older",
+      "measurement_period": "January 1, 2026 \u2013 December 1, 2026",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Risk-adjusted ratio of observed-to-expected unplanned acute readmissions within 30 days of an acute inpatient or observation discharge for members 18+. A lower rate is better."],
+      "methods_to_close_gap": [
+        "Schedule a follow-up visit within 7 days of discharge.",
+        "Complete medication reconciliation post-discharge.",
+        "Use transitions-of-care workflows and PCOR discharge alerts."
+      ],
+      "best_practices": [
+        "Call high-risk members within 48\u201372 hours of discharge.",
+        "Coordinate home health and DME before discharge."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the stay",
+        "Pregnancy and planned readmissions"
+      ]
+    },
+    "Follow-Up After ED Visit for High-Risk Chronic Conditions": {
+      "measure_id": "FMC",
+      "category": "administrative",
+      "plans": ["medicare"],
+      "method": "Administrative",
+      "supplemental": false,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 96,
+      "ages": "18 and older with multiple high-risk chronic conditions",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["Percentage of ED visits for members 18+ with multiple high-risk chronic conditions that had a follow-up service within 7 days of the ED visit."],
+      "methods_to_close_gap": [
+        "See the member (office, telehealth, or home) within 7 days of the ED visit.",
+        "Use ED-visit alerts from the PCOR / portal to trigger outreach.",
+        "Telehealth and select non-physician visits count."
+      ],
+      "best_practices": [
+        "Set up same-week post-ED scheduling for chronic-condition patients.",
+        "Outreach within 1\u20132 days improves the 7-day capture."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Emergency Department Utilization": {
+      "measure_id": "EDU",
+      "category": "administrative",
+      "plans": ["medicare", "commercial"],
+      "method": "Administrative",
+      "supplemental": false,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 94,
+      "ages": "18 and older",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Risk-adjusted ratio of observed-to-expected emergency department visits for members 18+ during the measurement year. A lower rate is better."],
+      "methods_to_close_gap": [
+        "Offer same-day/extended-hours access and a 24/7 nurse line.",
+        "Proactively manage chronic conditions to avoid ED reliance.",
+        "Follow up promptly after any ED visit."
+      ],
+      "best_practices": [
+        "Educate members on appropriate urgent-care vs ED use.",
+        "Close care gaps that commonly drive avoidable ED visits."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Adults' Access to Preventive/Ambulatory Health Services": {
+      "measure_id": "AAP",
+      "category": "administrative",
+      "plans": ["medicare", "commercial", "medicaid"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 91,
+      "ages": "20 and older",
+      "measurement_period": "Measurement year (commercial: prior or current year)",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Percentage of members 20+ who had an ambulatory or preventive care visit. For Medicaid/Medicare the visit must occur in the measurement year; for commercial within the measurement or prior year."],
+      "methods_to_close_gap": [
+        "Schedule an annual wellness or preventive visit; submit the visit code.",
+        "Telehealth ambulatory visits count.",
+        "Use the PCOR to find members with no visit on record."
+      ],
+      "best_practices": [
+        "Outreach to members with no claim activity early in the year.",
+        "Bundle preventive screenings into the same visit."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Transitions of Care \u2013 Notification of Inpatient Admission": {
+      "measure_id": "TRC",
+      "category": "administrative",
+      "plans": ["medicare"],
+      "method": "Hybrid",
+      "supplemental": false,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 117,
+      "ages": "18 and older",
+      "measurement_period": "January 1 \u2013 December 1 of the measurement year",
+      "quality_programs": ["CMS Star Ratings", "NCQA Health Plan Ratings"],
+      "description": ["For members 18+, percentage of inpatient discharges with notification of inpatient admission documented the day of, or within 2 days after, admission (3 days total). Hybrid-only \u2014 no administrative data available; medical record documentation is required."],
+      "methods_to_close_gap": [
+        "Document the admission notification within 3 days (day of admit + 2).",
+        "Capture date and source of the notification in the record \u2014 chart review is the only path.",
+        "Also addresses the related TRC sub-measures (med reconciliation, patient engagement, discharge info)."
+      ],
+      "best_practices": [
+        "Build an inpatient-admission notification log into the EHR.",
+        "Coordinate with hospitalists for timely admission alerts."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Care for Older Adults": {
+      "measure_id": "COA",
+      "category": "administrative",
+      "plans": ["medicare"],
+      "method": "Hybrid",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 27,
+      "ages": "66 and older (Medicare SNP)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings"],
+      "description": ["Percentage of adults 66+ (Medicare Special Needs Plans) with evidence of a functional status assessment and a medication review during the measurement year."],
+      "methods_to_close_gap": [
+        "Document a functional status assessment (CPT II 1170F or 99483) at a visit.",
+        "Complete a medication review by a prescriber/clinical pharmacist with a med list (CPT II 1160F + 1159F).",
+        "Submit supplemental data via the Provider Portal."
+      ],
+      "best_practices": [
+        "Combine functional assessment and med review in the annual SNP visit.",
+        "Both components must be documented to fully close COA."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Advance Care Planning": {
+      "measure_id": "ACP",
+      "category": "administrative",
+      "plans": ["medicare"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 25,
+      "ages": "66\u201380 with advanced illness/frailty; 81+ all",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings"],
+      "description": ["Percentage of adults 66\u201380 with advanced illness, frailty or palliative care, and all adults 81+, who had evidence of advance care planning during the measurement year."],
+      "methods_to_close_gap": [
+        "Conduct and document an advance care planning discussion; submit CPT 99497 (\u00b199498).",
+        "Document an advance directive, surrogate decision-maker, or POLST/MOLST in the record.",
+        "Submit supplemental data via the Provider Portal."
+      ],
+      "best_practices": [
+        "Normalize ACP conversations during the annual wellness visit.",
+        "Recording the directive in the chart closes the gap."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year"
+      ]
+    },
+    "Medication Adherence for Cholesterol (Statins)": {
+      "measure_id": "MAC",
+      "category": "other",
+      "plans": ["medicare"],
+      "method": "Part D",
+      "supplemental": false,
+      "new_2026": "Updated for 2026.",
+      "pdf_page": 325,
+      "ages": "18 and older (Medicare Part D)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings (Part D, triple-weighted)"],
+      "description": ["Percentage of Medicare Part D members 18+ who adhere to their cholesterol (statin) medication at least 80% of the time (proportion of days covered, PDC \u2265 80%)."],
+      "methods_to_close_gap": [
+        "Convert to 90-day fills and enroll in auto-refill / mail order.",
+        "Address gaps before they occur \u2014 PDC is calculated from pharmacy claims, not coding.",
+        "Use the PCOR adherence flags to target outreach."
+      ],
+      "best_practices": [
+        "Sync refill dates across chronic medications.",
+        "A single long gap can drop PDC below 80% for the year."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice",
+        "ESRD",
+        "Fewer than two fills of the target medication"
+      ]
+    },
+    "Medication Adherence for Diabetes": {
+      "measure_id": "MAD",
+      "category": "other",
+      "plans": ["medicare"],
+      "method": "Part D",
+      "supplemental": false,
+      "new_2026": "Updated for 2026.",
+      "pdf_page": 328,
+      "ages": "18 and older (Medicare Part D)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings (Part D, triple-weighted)"],
+      "description": ["Percentage of Medicare Part D members 18+ adherent to their non-insulin diabetes medications at least 80% of the time (PDC \u2265 80%)."],
+      "methods_to_close_gap": [
+        "Use 90-day supplies, mail order and auto-refill.",
+        "Identify and resolve refill gaps early; pharmacy-claims driven.",
+        "Target members flagged on the PCOR."
+      ],
+      "best_practices": [
+        "Simplify regimens where clinically appropriate.",
+        "Insulin is excluded \u2014 this measure covers oral/non-insulin agents."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice",
+        "ESRD",
+        "One or more insulin fills (per spec)"
+      ]
+    },
+    "Medication Adherence for Hypertension (RAS Antagonists)": {
+      "measure_id": "MAH",
+      "category": "other",
+      "plans": ["medicare"],
+      "method": "Part D",
+      "supplemental": false,
+      "new_2026": "Updated for 2026.",
+      "pdf_page": 331,
+      "ages": "18 and older (Medicare Part D)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings (Part D, triple-weighted)"],
+      "description": ["Percentage of Medicare Part D members 18+ adherent to their hypertension RAS-antagonist medication (ACEI/ARB/direct renin inhibitor) at least 80% of the time (PDC \u2265 80%)."],
+      "methods_to_close_gap": [
+        "Prescribe 90-day fills; enroll in auto-refill / mail order.",
+        "Watch for refill gaps \u2014 PDC is pharmacy-claims based.",
+        "Use PCOR adherence flags for outreach."
+      ],
+      "best_practices": [
+        "Synchronize the RAS antagonist with other chronic refills.",
+        "Counsel on continuing therapy even when BP is controlled."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice",
+        "ESRD",
+        "Sacubitril/valsartan or one fill only (per spec)"
+      ]
+    },
+    "Concurrent Use of Opioids and Benzodiazepines": {
+      "measure_id": "COB",
+      "category": "other",
+      "plans": ["medicare"],
+      "method": "Part D",
+      "supplemental": false,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 321,
+      "ages": "18 and older (Medicare Part D)",
+      "measurement_period": "January 1, 2026 \u2013 December 31, 2026",
+      "quality_programs": ["CMS Star Ratings (Part D)"],
+      "description": ["Percentage of Medicare Part D members 18+ with concurrent use of prescription opioids and benzodiazepines. A lower rate is better."],
+      "methods_to_close_gap": [
+        "Avoid co-prescribing opioids and benzodiazepines; taper where safe.",
+        "Reconcile medications across prescribers and pharmacies.",
+        "Document medical necessity when co-use is unavoidable."
+      ],
+      "best_practices": [
+        "Check the state PDMP before prescribing.",
+        "Coordinate care when multiple prescribers are involved."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice",
+        "Cancer or sickle cell diagnosis"
+      ]
+    },
+    "Avoidance of Antibiotic Treatment for Acute Bronchitis/Bronchiolitis": {
+      "measure_id": "AAB",
+      "category": "other",
+      "plans": ["medicare", "commercial", "exchange", "medicaid"],
+      "method": "Administrative",
+      "supplemental": true,
+      "new_2026": "No applicable changes for this measure.",
+      "pdf_page": 189,
+      "ages": "3 months and older",
+      "measurement_period": "July 1 (prior year) \u2013 June 30 (measurement year)",
+      "quality_programs": ["NCQA Health Plan Ratings"],
+      "description": ["Percentage of episodes for members 3 months+ with acute bronchitis/bronchiolitis who were NOT dispensed an antibiotic. A higher rate is better (antibiotics should be avoided)."],
+      "methods_to_close_gap": [
+        "Treat uncomplicated acute bronchitis symptomatically \u2014 do not prescribe antibiotics.",
+        "Document the rationale; offer a symptom-management plan and return precautions.",
+        "Use delayed-prescription strategies where appropriate."
+      ],
+      "best_practices": [
+        "Educate patients that antibiotics do not help viral bronchitis.",
+        "A comorbid bacterial condition can exclude the episode \u2014 code it accurately."
+      ],
+      "denominator_exclusions": [
+        "Members in hospice or using hospice services",
+        "Members who died during the measurement year",
+        "Competing/comorbid diagnoses or recent antibiotic use that justify treatment"
+      ]
+    }
+  }
+};
+
+const CAT_META = {
+  cardiometabolic:{label:"Cardiometabolic & Diabetes", color:"#0056b3"},
+  cancer:{label:"Screening & Prevention", color:"#c0392b"},
+  administrative:{label:"Care Transitions & Access", color:"#0f8a8a"},
+  other:{label:"Medication Mgmt & Adherence", color:"#5a6478"}
+};
+const CAT_ORDER = ["cardiometabolic","cancer","administrative","other"];
+const METHOD_RANK = {Hybrid:0, ECDS:1, Administrative:2, "Part D":3};
+const PDF_FILE = "United_2026-PATH-Ref-Guide.pdf"; // adjust path if hosted
+
+let currentPlan = "medicare";
+let frailtyOn = false;
+let selectedId = null;
+
+const measures = Object.entries(DATA.conditions).map(([name,m]) => ({name, ...m}));
+
+function isFrail(m){
+  return (m.denominator_exclusions||[]).some(e=>{
+    const s=e.toLowerCase(); return s.includes("frailty")||s.includes("advanced illness");
+  });
+}
+function methodClass(meth){ return meth==="Part D"?"partd":(meth==="ECDS"?"ecds":(meth==="Hybrid"?"hybrid":"admin")); }
+function methodKey(meth){ return meth==="Part D"?"PartD":meth; }
+function methodTag(meth){ return meth==="Part D"?"RX":(meth==="ECDS"?"ECDS":(meth==="Hybrid"?"HYB":"ADM")); }
+
+function render(){
+  const cont = document.getElementById("catContainer");
+  cont.innerHTML="";
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  let shown=0;
+
+  CAT_ORDER.forEach(cat=>{
+    let list = measures.filter(m=>m.category===cat && m.plans.includes(currentPlan));
+    if(q) list = list.filter(m=> m.name.toLowerCase().includes(q) || m.measure_id.toLowerCase().includes(q));
+    if(!list.length) return;
+    list.sort((a,b)=> (METHOD_RANK[a.method]-METHOD_RANK[b.method]) || a.name.localeCompare(b.name));
+
+    const sec=document.createElement("div"); sec.className="cat";
+    const cm=CAT_META[cat];
+    sec.innerHTML = `<div class="cat-head"><span class="bar" style="background:${cm.color}"></span>${cm.label}</div>`;
+    const grid=document.createElement("div"); grid.className="grid";
+
+    list.forEach(m=>{
+      shown++;
+      const btn=document.createElement("button");
+      btn.className=`m-btn ${m.category} method-${methodKey(m.method)}`+(isFrail(m)?" frail":"")+(m.measure_id===selectedId?" sel":"");
+      const flags = (m.supplemental?'<span title="Supplemental data accepted">SUPP</span>':'')
+                  + ((m.new_2026 && !/no applicable/i.test(m.new_2026))?'<span title="New / updated for 2026">NEW</span>':'');
+      btn.innerHTML = `<span class="m-tag">${methodTag(m.method)}</span>`
+        + `<span class="mid">${m.measure_id}</span>${m.name}`
+        + `<span class="m-flags">${flags}</span>`;
+      btn.onclick=()=>{ selectedId=m.measure_id; showDetail(m); render(); window.scrollTo({top:0,behavior:"smooth"}); };
+      grid.appendChild(btn);
+    });
+    sec.appendChild(grid); cont.appendChild(sec);
+  });
+  if(!shown){ cont.innerHTML='<p style="color:#777;padding:20px 4px">No measures match this plan/filter.</p>'; }
+  document.getElementById("stat").textContent = shown+" measure"+(shown===1?"":"s");
+  document.getElementById("catContainer").classList.toggle("frailty-on", frailtyOn);
+}
+
+function showDetail(m){
+  document.getElementById("details").style.display="block";
+  document.getElementById("dName").textContent = m.name;
+  const pg = m.pdf_page ? ` &nbsp;|&nbsp; <a href="${PDF_FILE}#page=${m.pdf_page}" target="_blank">View in Guide (p.${m.pdf_page})</a>` : "";
+  document.getElementById("dId").innerHTML = `Measure ID: <b>${m.measure_id}</b>${pg}`;
+
+  document.getElementById("dGap").innerHTML = (m.methods_to_close_gap||[]).map(x=>`<li>${x}</li>`).join("") || "<li>See source guide.</li>";
+
+  const mc=methodClass(m.method);
+  const chips=[];
+  chips.push(`<span class="chip ${mc}">${m.method}<small>${DATA._meta.method_legend[m.method]||""}</small></span>`);
+  if(m.supplemental) chips.push(`<span class="chip supp">\u2713 Supplemental data accepted</span>`);
+  if(m.new_2026 && !/no applicable/i.test(m.new_2026)) chips.push(`<span class="chip new">2026: ${m.new_2026}</span>`);
+  m.plans.forEach(p=>chips.push(`<span class="chip plan">${planLabel(p)}</span>`));
+  document.getElementById("dMethod").innerHTML = chips.join("");
+
+  const desc = Array.isArray(m.description)? m.description.map(d=>`<div class="def">${d}</div>`).join("") : `<div class="def">${m.description}</div>`;
+  document.getElementById("dMeta").innerHTML =
+      desc
+    + `<p><b>Ages:</b> ${m.ages||"\u2014"}</p>`
+    + `<p><b>Measurement period:</b> ${m.measurement_period||"\u2014"}</p>`
+    + `<p><b>Quality programs:</b> ${(m.quality_programs||[]).join(", ")||"\u2014"}</p>`;
+
+  const bp=document.getElementById("bpBox");
+  bp.innerHTML = "<b>Best practices</b><ul>"+(m.best_practices||[]).map(x=>`<li>${x}</li>`).join("")+"</ul>";
+  bp.style.display="none"; document.getElementById("bpBtn").textContent="Best Practices";
+
+  const ex=document.getElementById("exBox");
+  ex.innerHTML = "<b>Required / optional exclusions</b><ul>"+(m.denominator_exclusions||[]).map(x=>{
+    const s=x.toLowerCase(); const cls=(s.includes("frailty")||s.includes("advanced illness"))?' class="excl-frail"':'';
+    return `<li${cls}>${x}</li>`;}).join("")+"</ul>";
+  ex.style.display="none"; document.getElementById("exBtn").textContent="Required Exclusions";
+}
+
+function planLabel(p){return {medicare:"Medicare/SNP",commercial:"Commercial",exchange:"Exchange",medicaid:"Medicaid"}[p]||p;}
+
+/* events */
+document.getElementById("planToggle").addEventListener("click",e=>{
+  const b=e.target.closest(".plan-button"); if(!b) return;
+  document.querySelectorAll(".plan-button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); currentPlan=b.dataset.plan;
+  document.getElementById("details").style.display="none"; selectedId=null; render();
+});
+document.getElementById("frailtyBtn").addEventListener("click",function(){
+  frailtyOn=!frailtyOn; this.classList.toggle("active",frailtyOn);
+  this.textContent = frailtyOn? "Hide Frailty & Adv. Illness Exclusions":"Show Frailty & Adv. Illness Exclusions";
+  render();
+});
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("closeBtn").addEventListener("click",()=>{
+  document.getElementById("details").style.display="none"; selectedId=null; render();
+});
+document.getElementById("bpBtn").addEventListener("click",function(){
+  const b=document.getElementById("bpBox");const open=b.style.display!=="none";
+  b.style.display=open?"none":"block"; this.textContent=open?"Best Practices":"Hide Best Practices";
+});
+document.getElementById("exBtn").addEventListener("click",function(){
+  const b=document.getElementById("exBox");const open=b.style.display!=="none";
+  b.style.display=open?"none":"block"; this.textContent=open?"Required Exclusions":"Hide Exclusions";
+});
+
+render();
+</script>
+</body>
+</html>
